@@ -1,0 +1,31 @@
+{% extends 'homepage/base.html' %}
+
+{% block title %}
+Riepilogo Prenotazione
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center">Riepilogo Prenotazione</h2>
+    <hr>
+    <div class="card p-4">
+        <h5>Dettagli Utente</h5>
+        <p><strong>Nome:</strong> {{ nome }}</p>
+        <p><strong>Cognome:</strong> {{ cognome }}</p>
+        <p><strong>Email:</strong> {{ email }}</p>
+        <hr>
+        <h5>Dettagli Prenotazione</h5>
+        <p><strong>Check-in:</strong> {{ data_inizio }}</p>
+        <p><strong>Check-out:</strong> {{ data_fine }}</p>
+        <p><strong>Numero di Persone:</strong> {{ numero_persone }}</p>
+        <p><strong>Prezzo Totale:</strong> €{{ prezzo_totale }}</p>
+        <hr>
+        <div class="alert alert-success" role="alert">
+            La tua prenotazione è stata completata con successo!
+        </div>
+        <div class="alert alert-info" role="alert">
+            A breve riceverai una email con tutte le informazioni.
+        </div>
+    </div>
+</div>
+{% endblock %}

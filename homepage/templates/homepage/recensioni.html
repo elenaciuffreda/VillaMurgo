@@ -1,0 +1,95 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Recensioni{% endblock %}</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Gabarito:wght@400..900&display=swap" rel="stylesheet">
+    <style>
+        @media (min-width: 992px) {
+            .card {
+                transition: transform 0.3s ease-in-out;
+            }
+            .card:hover {
+                transform: scale(1.05);
+            }
+        }
+        body {
+            font-family: 'Gabarito', sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .container {
+            flex: 1;
+        }
+        .btn-custom {
+            background-color: #dec683;
+            color: black;
+            border-radius: 20px;
+            padding: 10px 30px;
+            border: none;
+        }
+        .btn-custom:hover {
+            background-color: #fff0bf;
+            color: black;
+        }
+        .recensioni-card {
+            margin-top: 2rem;
+        }
+        .navbar-nav {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+        .navbar-collapse {
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'homepage' %}">Villa Murgo</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+        <h1 class="text-center my-4">Le vostre recensioni</h1>
+        <div class="row">
+                {% for recensione in recensioni %}
+                    <div class="col-md-4">
+                        <div class="card recensioni-card">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ recensione.titolo }}</h5>
+                                <p class="card-text"><small class="text-muted">Nome: {{ recensione.nome }}</small></p>
+                                <p class="card-text"><small class="text-muted">Commento: {{ recensione.commento }}</small></p>
+                                <p class="card-text"><small class="text-muted">Voto: {{ recensione.voto }}</small></p>
+
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+        </div>
+    </div>
+    <footer class="text-center py-4 bg-light mt-auto">
+        <p>&copy; 2024 Villa Murgo. Tutti i diritti riservati.</p>
+    </footer>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

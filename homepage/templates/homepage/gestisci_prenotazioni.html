@@ -1,0 +1,41 @@
+{% extends "homepage/base.html" %}
+
+{% block content %}
+<h2>Gestisci le tue prenotazioni</h2>
+
+{% if prenotazioni %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Villa</th>
+                <th>Check-in</th>
+                <th>Check-out</th>
+                <th>Azioni</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for prenotazione in prenotazioni %}
+                <tr>
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="booking_id" value="{{ prenotazione.id }}">
+                        <td>{{ prenotazione.villa.nomeVilla }}</td>
+                        <td>
+                            <input type="date" name="checkin" class="form-control" value="{{ prenotazione.checkin }}">
+                        </td>
+                        <td>
+                            <input type="date" name="checkout" class="form-control" value="{{ prenotazione.checkout }}">
+                        </td>
+                        <td>
+                            <button type="submit" name="edit" class="btn btn-warning btn-sm">Salva</button>
+                            <button type="submit" name="delete" class="btn btn-danger btn-sm">Cancella</button>
+                        </td>
+                    </form>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>Non hai prenotazioni attive.</p>
+{% endif %}
+{% endblock %}

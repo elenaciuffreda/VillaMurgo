@@ -1,0 +1,77 @@
+{% extends 'homepage/base.html' %}
+
+{% block title %}
+Registrazione - Villa Murgo
+{% endblock %}
+
+{% block content %}
+<style>
+    /* Stili personalizzati */
+    .card-custom {
+        max-width: 400px; /* Riduci la larghezza della card */
+        margin: auto; /* Centra la card */
+    }
+
+    .card-header {
+        background-color: #dec683; /* Sfondo giallo */
+        color: white; /* Testo bianco */
+    }
+
+    .form-control {
+        border-color: #343a40;
+    }
+
+    .btn-custom {
+        background-color: #dec683; /* Giallo */
+        color: black; /* Testo scuro */
+    }
+
+    .btn-custom:hover {
+        background-color: #fff0bf; /* Colore quando il pulsante è in hover */
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="card card-custom shadow-lg">
+        <div class="card-header text-center">
+            <h3>Registrazione</h3>
+        </div>
+        <div class="card-body">
+            <form method="POST">
+                {% csrf_token %}
+                {% if form.errors %}
+                    <div class="alert alert-danger">
+                    <ul>
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                            <li>{{ field }}: {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+                <div class="mb-3">
+                    <input type="email" name="email" class="form-control rounded-pill" placeholder="Email" required>
+                </div>
+                <div class="mb-3">
+                    <input type="text" name="first_name" class="form-control rounded-pill" placeholder="Nome" required>
+                </div>
+                <div class="mb-3">
+                    <input type="text" name="last_name" class="form-control rounded-pill" placeholder="Cognome" required>
+                </div>
+                <div class="mb-3">
+                    <input type="password" name="password1" class="form-control rounded-pill" placeholder="Password" required>
+                </div>
+                <div class="mb-3">
+                    <input type="password" name="password2" class="form-control rounded-pill" placeholder="Conferma Password" required>
+                </div>
+                <div class="d-grid gap-2 col-6 mx-auto">
+                    <button type="submit" class="btn btn-custom rounded-pill">Prosegui con la prenotazione</button>
+                </div>
+            </form>            
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
