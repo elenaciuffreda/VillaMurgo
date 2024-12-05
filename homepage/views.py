@@ -79,27 +79,36 @@ def disponibilita(request):
 
     return render(request, 'homepage/disponibilita.html', context)
 
-def registrazione(request):
+def registrazione_o_prenotazione(request, tipo="registrazione"):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-
             user = form.save(commit=False)
             user.username = form.cleaned_data['email']
             user.save()
-            
-            
+
             # Salva i dati corretti nella sessione
             request.session['email'] = form.cleaned_data['email']
-            request.session['nome'] = form.cleaned_data['first_name']  # Cambiato
-            request.session['cognome'] = form.cleaned_data['last_name']  # Cambiato
-            
-            # Reindirizza alla pagina di riepilogo
-            return redirect('riepilogoprenotazione')
+            request.session['nome'] = form.cleaned_data['first_name']
+            request.session['cognome'] = form.cleaned_data['last_name']
+
+            if tipo == "prenotazione":
+                return redirect('riepilogoprenotazione')  # Reindirizza al riepilogo della prenotazione
+            else:
+                login(request, user)  # Effettua il login automatico per la registrazione
+                return redirect('homepage')
     else:
         form = CustomUserCreationForm()
-    
-    return render(request, 'homepage/registrazione.html', {'form': form})
+
+    # Determina il contesto dinamico
+    context = {
+        'form': form,
+        'titolo': "Prenotazione" if tipo == "prenotazione" else "Registrazione",
+        'bottone': "Prosegui con la prenotazione" if tipo == "prenotazione" else "Registrati",
+        'action': '/prenotazione/' if tipo == "prenotazione" else '/registrazione/',  # URL di destinazione
+    }
+
+    return render(request, 'homepage/registrazione.html', context)
 
 def riepilogoprenotazione(request):
 
@@ -169,9 +178,7 @@ def aggiungi_recensione(request):
         form = RecensioneForm()
     return render(request, 'homepage/aggiungi_recensione.html', {'form': form})
 
-def account_view(request):
-    # Logica per la vista "Mio Account"
-    return render(request, 'mio_account.html')
+
 
 def logout(request):
     logout(request)
