@@ -145,4 +145,23 @@
         });
     }
 </script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const today = new Date();
+        // Aggiungi un giorno a oggi
+        const tomorrow = new Date(today);
+        tomorrow.setDate(today.getDate() + 1);
+
+        // Formatta la data in formato yyyy-mm-dd
+        const minDate = tomorrow.toISOString().split('T')[0];
+
+        // Imposta il valore minimo per i campi data
+        const dataInizio = document.getElementById('data-inizio');
+        const dataFine = document.getElementById('data-fine');
+
+        dataInizio.setAttribute('min', minDate);
+        dataFine.setAttribute('min', minDate);
+    });
+</script>
 {% endblock %}
