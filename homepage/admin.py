@@ -1,7 +1,13 @@
 from django.contrib import admin
 from .models import Homepage, Villa, Recensione
+from .models import Booking
+
+
+
 
 admin.site.register(Homepage)
+
+admin.site.register(Booking)
 
 @admin.register(Villa)
 class VillaAdmin(admin.ModelAdmin):

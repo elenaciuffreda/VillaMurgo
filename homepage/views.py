@@ -8,7 +8,7 @@ from .models import Villa, Homepage
 from .models import Recensione
 from .models import Homepage
 from .models import Booking
-from datetime import datetime
+from datetime import date, datetime
 from .forms import CustomUserCreationForm, RecensioneForm  # Assicurati di importare il tuo form
 
 def homepage(request):
@@ -186,3 +186,39 @@ def logout(request):
 
 def login(request):
     return redirect(request, "login.html")
+
+def verifica_disponibilita_view(request, villa_id):
+    villa = get_object_or_404(Villa, id=villa_id)
+    
+    checkin = request.GET.get('checkin')
+    checkout = request.GET.get('checkout')
+    numero_persone = int(request.GET.get('persone', 1))  # Default a 1 persona
+    prezzo_per_notte = villa.prezzo_base + (villa.prezzo_per_persona * numero_persone)
+    
+    if checkin and checkout:
+        checkin_date = date.fromisoformat(checkin)
+        checkout_date = date.fromisoformat(checkout)
+        
+        # Calcolare il numero di notti
+        giorni_totali = (checkout_date - checkin_date).days
+        
+        # Calcolare il prezzo totale
+        prezzo_totale = giorni_totali * prezzo_per_notte
+        
+        disponibilita = villa.verifica_disponibilita(checkin_date, checkout_date)
+    else:
+        disponibilita = None
+        giorni_totali = prezzo_totale = 0
+
+    return render(request, 'disponibilita.html', {
+        'villa': villa,
+        'disponibilita': disponibilita,
+        'checkin': checkin,
+        'checkout': checkout,
+        'numeroPersone': numero_persone,
+        'prezzoNotte': prezzo_per_notte,
+        'prezzoTotale': prezzo_totale,
+        'giorniTotali': giorni_totali,
+        'dataInizio': checkin,
+        'dataFine': checkout,
+    })

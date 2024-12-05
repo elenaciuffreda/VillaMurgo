@@ -28,14 +28,19 @@ Disponibilità - Villa Murgo
 
             <hr>
 
-            <div class="alert alert-success" role="alert">
-                Villa Murgo è disponibile per le date selezionate! 
-            </div>
+            {% if disponibilita %}
+                <div class="alert alert-success" role="alert">
+                    Villa Murgo è disponibile per le date selezionate!
+                </div>
+                <div class="d-grid gap-2 col-6 mx-auto mt-4">
+                    <a href="{% url 'registrazione' %}?checkin={{ dataInizio }}&checkout={{ dataFine }}&persone={{ numeroPersone }}&prezzo={{ prezzoTotale }}" class="btn btn-custom">Completa la Prenotazione</a>
+                </div>
+            {% else %}
+                <div class="alert alert-danger" role="alert">
+                    La villa non è disponibile per le date selezionate.
+                </div>
+            {% endif %}
 
-            <div class="d-grid gap-2 col-6 mx-auto mt-4">
-                <a href="{% url 'registrazione' %}?checkin={{ dataInizio }}&checkout={{ dataFine }}&persone={{ numeroPersone }}&prezzo={{ prezzoTotale }}" class="btn btn-custom">Completa la Prenotazione</a>
-            </div>
-            
         </div>
     </div>
 </div>
