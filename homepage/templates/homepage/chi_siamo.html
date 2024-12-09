@@ -9,54 +9,45 @@
       margin-top: 15px; 
       margin-bottom: 25px; 
     }
-  </style> 
 
-    <h3>Chi siamo</h3>
-    <p>Villa Murgo nasce da una necessità personale, dal desiderio di riconnettersi con la natura.</p>
-    <p>In un'epoca in cui è fondamentale ritagliarsi del tempo per sè
-        Villa Murgo offre un rifugio dove respirare aria fresca, camminare e riscoprire quelle piccole
-        attività spesso dimenticate. </p>
-    <p>Con i suoi incantevoli tramonti e la vista sul golfo, ti sorprenderà
-        con i suoni della natura regalandoti una estate di totale tranquillità e serenità
-    </p>
-    <!-- Card Section -->
-    <div class="container mt-4">
-        <div class="row">
-            <!-- Card 1 -->
-            <div class="col-md-4">
-                <div class="card">
-                    <img src="https://via.placeholder.com/300" class="card-img-top" alt="Immagine 1">
-                    <div class="card-body">
-                        <h5 class="card-title">Trekking nel gargano</h5>
-                        <p class="card-text">Esplora il Gargano a piedi, tra sentieri e boschi, partendo da Villa Murgo</p>
-                        <a href="#" class="btn btn-custom">Scopri di più</a>
-                    </div>
-                </div>
-            </div>
+    .card-img-top {
+        width: 100%; /* Rende la larghezza dell'immagine uguale a quella della card */
+        height: 200px; /* Imposta un'altezza fissa per le immagini */
+        object-fit: cover; /* Mantiene il rapporto di aspetto */
+        margin-bottom: 10px; /* Distanza tra l'immagine e il contenuto della card */
+    }
 
-            <!-- Card 2 -->
-            <div class="col-md-4">
-                <div class="card">
-                    <img src="https://via.placeholder.com/300" class="card-img-top" alt="Immagine 2">
-                    <div class="card-body">
-                        <h5 class="card-title">Fattoria</h5>
-                        <p class="card-text"> Vediamo insieme i prodotti tipici del Gargano direttamente da chi li produce</p>
-                        <a href="#" class="btn btn-custom">Scopri di più</a>
-                    </div>
-                </div>
-            </div>
+    .card {
+        margin-bottom: 20px; /* Spazio tra le card */
+    }
 
-            <!-- Card 3 -->
-            <div class="col-md-4">
-                <div class="card">
-                    <img src="https://via.placeholder.com/300" class="card-img-top" alt="Immagine 3">
-                    <div class="card-body">
-                        <h5 class="card-title">Gargano a cavallo</h5>
-                        <p class="card-text"> Scopri il Gargano a cavallo tra natura e panorami mozzafiato</p>
-                        <a href="#" class="btn btn-custom">Scopri di più</a>
-                    </div>
+    .btn-custom {
+        background-color: #007bff; /* Puoi personalizzare questo colore */
+        color: white;
+    }
+</style> 
+
+<h3>Chi siamo</h3>
+<p>Villa Murgo nasce da una necessità personale, dal desiderio di riconnettersi con la natura.</p>
+<p>In un'epoca in cui è fondamentale ritagliarsi del tempo per sé, Villa Murgo offre un rifugio dove respirare aria fresca, camminare e riscoprire quelle piccole attività spesso dimenticate.</p>
+<p>Con i suoi incantevoli tramonti e la vista sul golfo, ti sorprenderà con i suoni della natura regalandoti un'estate di totale tranquillità e serenità.</p>
+
+<!-- Card Section -->
+<div class="container mt-4">
+    <div class="row d-flex justify-content-center"> <!-- Centra le card -->
+        {% for attivita in attivita_list %}
+        <div class="col-md-4">
+            <div class="card">
+                <img src="{{ attivita.immagine.url }}" class="card-img-top" alt="{{ attivita.titolo }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ attivita.titolo }}</h5>
+                    <p class="card-text">{{ attivita.descrizione }}</p>
+                    <a href="#" class="btn btn-custom">Scopri di più</a>
                 </div>
             </div>
         </div>
+        {% endfor %}
     </div>
+</div>
+
 {% endblock %}

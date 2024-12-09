@@ -34,6 +34,8 @@ class Booking(models.Model):
     def __str__(self):
         return f"{self.villa.nomeVilla}: {self.checkin} - {self.checkout}"
 
+
+#Modello per le recensioni
 class Recensione(models.Model):
     nome = models.CharField(max_length=100)
     commento = models.TextField()
@@ -42,3 +44,15 @@ class Recensione(models.Model):
 
     def __str__(self):
         return f"{self.nome} - {self.voto}/5"
+    
+
+
+from django.db import models
+#Modello per le attività 
+class Attivita(models.Model):
+    titolo = models.CharField(max_length=200)
+    descrizione = models.TextField()
+    immagine = models.ImageField(upload_to='attivita_pics/', null=True, blank=True)
+
+    def __str__(self):
+        return self.titolo

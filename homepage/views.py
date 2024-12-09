@@ -8,6 +8,7 @@ from .models import Villa, Homepage
 from .models import Recensione
 from .models import Homepage
 from .models import Booking
+from .models import Attivita
 from datetime import date, datetime
 from .forms import CustomUserCreationForm, RecensioneForm  
 
@@ -16,7 +17,8 @@ def homepage(request):
     return render(request, 'homepage/homepage.html', {'immagini': immagini})
 
 def chi_siamo(request):
-    return render(request, 'homepage/chi_siamo.html')
+    attivita_list = Attivita.objects.all()  
+    return render(request, 'homepage/chi_siamo.html', {'attivita_list': attivita_list})
 
 def prenota(request):
     return render(request, 'homepage/prenota.html')
@@ -114,7 +116,6 @@ def registrazione(request):
 
     return render(request, 'homepage/registrazione.html', context)
 
-
 def riepilogoprenotazione(request):
     nome = request.session.get('nome')
     cognome = request.session.get('cognome')
@@ -141,7 +142,6 @@ def riepilogoprenotazione(request):
     }
 
     return render(request, 'homepage/riepilogoprenotazione.html', context)
-
 
 @login_required
 def gestisci_prenotazioni(request):

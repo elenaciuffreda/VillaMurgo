@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Homepage, Villa, Recensione
+from .models import Homepage, Villa, Recensione, Attivita
 from .models import Booking
 
 
@@ -23,3 +23,9 @@ class RecensioneAdmin(admin.ModelAdmin):
     search_fields = ('nome', 'commento')         # Aggiungi una barra di ricerca
     list_filter = ('voto',)                      # Aggiungi un filtro per voto
     actions = ['delete_selected']                 # Permetti di eliminare selezionando più recensioni
+
+@admin.register(Attivita)
+class AttivitaAdmin(admin.ModelAdmin):
+    list_display = ('titolo', 'descrizione', 'immagine')  # Mostra nella lista
+    search_fields = ('titolo',)  # Aggiungi una barra di ricerca
+    list_filter = ('titolo',)  # Aggiungi un filtro per il titolo
