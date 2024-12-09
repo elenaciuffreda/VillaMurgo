@@ -4,18 +4,17 @@ from django.contrib.auth.forms import UserCreationForm
 from .models import Recensione
 
 class CustomUserCreationForm(UserCreationForm):
-    email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}))
-    first_name = forms.CharField(max_length=30, required=True, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nome'}))
-    last_name = forms.CharField(max_length=30, required=True, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Cognome'}))
-
-    class Meta:  # Corretto il nome della classe Meta
+    class Meta:
         model = User
         fields = ('email', 'first_name', 'last_name', 'password1', 'password2')
-        widgets = {
-            'username': forms.HiddenInput(),  # Nascondi il campo username
-            'password1': forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'}),
-            'password2': forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Conferma Password'}),
-        }
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.is_staff = False  # Imposta il flag staff
+        user.is_superuser = False  # Imposta il flag admin
+        if commit:
+            user.save()
+        return user
 
     
 class RegistrazioneForm(forms.Form):

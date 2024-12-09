@@ -10,32 +10,41 @@
                 <th>Villa</th>
                 <th>Check-in</th>
                 <th>Check-out</th>
+                <th>Numero di persone</th>
+                <th>Prezzo Totale</th>
                 <th>Azioni</th>
             </tr>
         </thead>
         <tbody>
             {% for prenotazione in prenotazioni %}
-                <tr>
-                    <form method="post">
+            <tr>
+                <td>{{ prenotazione.villa.nomeVilla }}</td>
+                <td>{{ prenotazione.checkin }}</td>
+                <td>{{ prenotazione.checkout }}</td>
+                <td>{{ prenotazione.numero_persone }}</td>
+                <td>€{{ prenotazione.prezzo_totale }}</td>
+                <td>
+                    <!-- Modifica prenotazione -->
+                    <form method="POST" action="{% url 'gestisci_prenotazioni' %}">
                         {% csrf_token %}
                         <input type="hidden" name="booking_id" value="{{ prenotazione.id }}">
-                        <td>{{ prenotazione.villa.nomeVilla }}</td>
-                        <td>
-                            <input type="date" name="checkin" class="form-control" value="{{ prenotazione.checkin }}">
-                        </td>
-                        <td>
-                            <input type="date" name="checkout" class="form-control" value="{{ prenotazione.checkout }}">
-                        </td>
-                        <td>
-                            <button type="submit" name="edit" class="btn btn-warning btn-sm">Salva</button>
-                            <button type="submit" name="delete" class="btn btn-danger btn-sm">Cancella</button>
-                        </td>
+                        <input type="date" name="checkin" class="form-control" value="{{ prenotazione.checkin }}" required>
+                        <input type="date" name="checkout" class="form-control" value="{{ prenotazione.checkout }}" required>
+                        <button type="submit" name="edit" class="btn btn-warning btn-sm">Salva</button>
                     </form>
-                </tr>
+                    <!-- Cancella prenotazione -->
+                    <form method="POST" action="{% url 'gestisci_prenotazioni' %}" style="display:inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="booking_id" value="{{ prenotazione.id }}">
+                        <button type="submit" name="delete" class="btn btn-danger btn-sm">Cancella</button>
+                    </form>
+                </td>
+            </tr>
             {% endfor %}
         </tbody>
     </table>
 {% else %}
     <p>Non hai prenotazioni attive.</p>
 {% endif %}
+
 {% endblock %}

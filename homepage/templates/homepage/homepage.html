@@ -3,6 +3,11 @@
 {% block title %}Homepage{% endblock %}
 
 {% block content %}
+<style>
+    body {
+        background-color: #fffdf5;
+    }
+</style>
 <div class="container mt-5">
     <div class="row">
         <!-- Card 1 -->
@@ -10,7 +15,7 @@
             <div class="card">
                 <div class="card-body">
                     <p class="card-text">Hai bisogno di un po' di relax?</p>
-                    <a href="#" class="btn btn-custom w-100">Sappiamo di cosa hai bisogno!</a>
+                    <a href="{% url 'chi_siamo' %}" class="btn btn-custom w-100">Sappiamo di cosa hai bisogno!</a>
                 </div>
             </div>
         </div>
@@ -19,7 +24,7 @@
             <div class="card">
                 <div class="card-body">
                     <p class="card-text">Hai bisogno di un'avventura?</p>
-                    <a href="#" class="btn btn-custom w-100">Clicca qui</a>
+                    <a href="{% url 'chi_siamo' %}" class="btn btn-custom w-100">Clicca qui</a>
                 </div>
             </div>
         </div>

@@ -25,14 +25,16 @@ class Villa(models.Model):
                 ).exists()
         
 class Booking(models.Model):
-    villa = models.ForeignKey(Villa, on_delete=models.CASCADE, related_name="bookings")
+    utente = models.ForeignKey(User, on_delete=models.CASCADE)
+    villa = models.ForeignKey(Villa, on_delete=models.CASCADE, related_name='bookings')  # Aggiungi related_name
     checkin = models.DateField()
     checkout = models.DateField()
-    utente = models.ForeignKey(User, on_delete=models.CASCADE, related_name="prenotazioni", null=True, blank=True)
-
+    numero_persone = models.PositiveIntegerField()
+    prezzo_totale = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
-        return f"{self.villa.nomeVilla}: {self.checkin} - {self.checkout}"
+        return f"Prenotazione {self.id} - {self.utente.username}"
+
 
 
 #Modello per le recensioni
@@ -45,9 +47,6 @@ class Recensione(models.Model):
     def __str__(self):
         return f"{self.nome} - {self.voto}/5"
     
-
-
-from django.db import models
 #Modello per le attività 
 class Attivita(models.Model):
     titolo = models.CharField(max_length=200)

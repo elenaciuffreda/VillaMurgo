@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import login
+from django.contrib.auth import login as auth_login
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import logout
+from django.contrib.auth.forms import AuthenticationForm
 from .models import Villa, Homepage
 from .models import Recensione
 from .models import Homepage
@@ -22,9 +23,6 @@ def chi_siamo(request):
 
 def prenota(request):
     return render(request, 'homepage/prenota.html')
-
-def foto_gallery(request):
-    return render(request, 'homepage/foto_gallery.html')
 
 def contattaci(request):
     return render(request, 'homepage/contattaci.html')
@@ -91,7 +89,12 @@ def registrazione(request):
             # Salvataggio dell'utente
             user = form.save(commit=False)
             user.username = form.cleaned_data['email']
+            user.is_staff = False  
+            user.is_superuser = False
             user.save()
+
+            # Autentica e logga l'utente
+            auth_login(request, user) 
 
             # Salva i dati dell'utente nella sessione
             request.session['email'] = form.cleaned_data['email']
@@ -101,8 +104,11 @@ def registrazione(request):
             # Se l'utente stava facendo una prenotazione, lo reindirizziamo al riepilogo
             if 'checkin' in request.session and 'checkout' in request.session:
                 return redirect('riepilogoprenotazione')
-
-            # Se non c'era una prenotazione, lo mandiamo alla homepage
+            
+            # Messaggio di benvenuto
+            messages.success(request, f"Benvenuto, {user.first_name}! La registrazione è avvenuta con successo.")
+            
+            # Reindirizzamento alla homepage
             return redirect('homepage')
     else:
         form = CustomUserCreationForm()
@@ -154,22 +160,23 @@ def gestisci_prenotazioni(request):
         if 'delete' in request.POST:
             prenotazione.delete()
             messages.success(request, "Prenotazione cancellata con successo!")
-            return redirect('gestisci_prenotazioni')
-
         elif 'edit' in request.POST:
             checkin = request.POST.get('checkin')
             checkout = request.POST.get('checkout')
 
-            if checkin and checkout:
+            # Verifica le nuove date e aggiorna la prenotazione
+            if checkin and checkout and checkin < checkout:
                 prenotazione.checkin = checkin
                 prenotazione.checkout = checkout
                 prenotazione.save()
                 messages.success(request, "Prenotazione aggiornata con successo!")
             else:
-                messages.error(request, "Dati non validi. Riprova!")
-            return redirect('gestisci_prenotazioni')
+                messages.error(request, "Le date non sono valide. Controlla e riprova.")
+
+        return redirect('gestisci_prenotazioni')
 
     return render(request, 'homepage/gestisci_prenotazioni.html', {'prenotazioni': prenotazioni})
+
 
 def gestisci_recensioni(request):
     recensioni = Recensione.objects.order_by('-data_creazione')
@@ -185,12 +192,25 @@ def aggiungi_recensione(request):
         form = RecensioneForm()
     return render(request, 'homepage/aggiungi_recensione.html', {'form': form})
 
-def logout(request):
+def user_logout(request):
     logout(request)
     return redirect('homepage')  # Reindirizza alla homepage dopo il logout
 
-def login_view(request):
-    return redirect(request, "login.html")
+def user_login(request):
+    if request.method == "POST":
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+
+            user = form.get_user()
+
+            auth_login(request, user)
+            return redirect('homepage')  # Redirigi alla home dopo il login
+        else:
+            messages.error(request, "Nome utente o password errati.")
+    else:
+        form = AuthenticationForm()
+    
+    return render(request, 'homepage/login.html', {'form': form})
 
 def verifica_disponibilita_view(request, villa_id):
     villa = get_object_or_404(Villa, id=villa_id)
@@ -227,3 +247,6 @@ def verifica_disponibilita_view(request, villa_id):
         'dataInizio': checkin,
         'dataFine': checkout,
     })
+
+def attivita_view (request): 
+     return render(request, 'homepage/attivita.html')
