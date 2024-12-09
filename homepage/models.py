@@ -19,12 +19,10 @@ class Villa(models.Model):
                 return self.nomeVilla
         
         def verifica_disponibilita(self, checkin, checkout):
-
-                prenotazioni = self.bookings.filter(
-                checkin__lt=checkout,  # Prenotazioni che iniziano prima della fine richiesta
-                checkout__gt=checkin  # Prenotazioni che finiscono dopo l'inizio richiesto
-                )
-                return not prenotazioni.exists()
+                return not self.bookings.filter(
+                        checkin__lt=checkout,
+                        checkout__gt=checkin
+                ).exists()
         
 class Booking(models.Model):
     villa = models.ForeignKey(Villa, on_delete=models.CASCADE, related_name="bookings")

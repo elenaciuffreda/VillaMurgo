@@ -28,7 +28,7 @@ Disponibilità - Villa Murgo
 
             <hr>
 
-            {% if disponibilita %}
+            {% if disponibile|yesno:"True,False" == "True" %}
                 <div class="alert alert-success" role="alert">
                     Villa Murgo è disponibile per le date selezionate!
                 </div>
@@ -40,7 +40,6 @@ Disponibilità - Villa Murgo
                     La villa non è disponibile per le date selezionate.
                 </div>
             {% endif %}
-
         </div>
     </div>
 </div>

@@ -8,6 +8,10 @@ from .models import Booking
 admin.site.register(Homepage)
 
 admin.site.register(Booking)
+class BookingAdmin(admin.ModelAdmin):
+    list_display = ('utente', 'checkin', 'checkout', 'prezzo_totale', 'numero_persone')
+    list_filter = ('utente', 'checkin', 'checkout')
+    search_fields = ('utente__username',)
 
 @admin.register(Villa)
 class VillaAdmin(admin.ModelAdmin):

@@ -9,7 +9,7 @@ from .models import Recensione
 from .models import Homepage
 from .models import Booking
 from datetime import date, datetime
-from .forms import CustomUserCreationForm, RecensioneForm  # Assicurati di importare il tuo form
+from .forms import CustomUserCreationForm, RecensioneForm  
 
 def homepage(request):
     immagini = Homepage.objects.all()
@@ -29,10 +29,11 @@ def contattaci(request):
 
 def disponibilita(request):
     today = datetime.today().date()
-    
     data_inizio = request.GET.get('dataInizio')
     data_fine = request.GET.get('dataFine')
     numero_persone = int(request.GET.get('numeroPersone', 1))
+
+    disponibile = False
 
     if not data_inizio or not data_fine:
         return render(request, 'homepage/error.html', {'error': 'Date non valide!'})
@@ -43,26 +44,27 @@ def disponibilita(request):
     except ValueError:
         return render(request, 'homepage/error.html', {'error': 'Formato data non valido!'})
 
-    # Validazione date
     if data_inizio_obj < today:
         return render(request, 'homepage/error.html', {'error': 'La data di inizio deve essere uguale o successiva a oggi!'})
     if data_fine_obj <= data_inizio_obj:
         return render(request, 'homepage/error.html', {'error': 'La data di fine deve essere successiva alla data di inizio!'})
 
     villa = Villa.objects.get(nomeVilla="Villa Murgo")
+    
+    # Verifica disponibilità
+    disponibile = villa.verifica_disponibilita(data_inizio_obj, data_fine_obj)
+    print(disponibile)
 
+    if not disponibile:
+        return render(request, 'homepage/error.html', {'error': 'La villa non è disponibile per le date selezionate.'})
+
+    # Calcolo del prezzo
     prezzo_per_notte_base = 100
     prezzo_per_persona_aggiuntiva = 20
-
-    if numero_persone > 1:
-        prezzo_per_notte = prezzo_per_notte_base + (prezzo_per_persona_aggiuntiva * (numero_persone - 1))
-    else:
-        prezzo_per_notte = prezzo_per_notte_base
-
+    prezzo_per_notte = prezzo_per_notte_base + (prezzo_per_persona_aggiuntiva * (numero_persone - 1))
     giorni_totali = (data_fine_obj - data_inizio_obj).days
     prezzo_totale = prezzo_per_notte * giorni_totali
 
-    # Salvataggio dei dati nella sessione
     request.session['checkin'] = data_inizio
     request.session['checkout'] = data_fine
     request.session['persone'] = numero_persone
@@ -74,50 +76,55 @@ def disponibilita(request):
         'numeroPersone': numero_persone,
         'prezzoNotte': prezzo_per_notte,
         'giorniTotali': giorni_totali,
-        'prezzoTotale': prezzo_totale
+        'prezzoTotale': prezzo_totale,
+        'disponibile': disponibile, 
     }
 
     return render(request, 'homepage/disponibilita.html', context)
 
-def registrazione_o_prenotazione(request, tipo="registrazione"):
+def registrazione(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
+            # Salvataggio dell'utente
             user = form.save(commit=False)
             user.username = form.cleaned_data['email']
             user.save()
 
-            # Salva i dati corretti nella sessione
+            # Salva i dati dell'utente nella sessione
             request.session['email'] = form.cleaned_data['email']
             request.session['nome'] = form.cleaned_data['first_name']
             request.session['cognome'] = form.cleaned_data['last_name']
+            
+            # Se l'utente stava facendo una prenotazione, lo reindirizziamo al riepilogo
+            if 'checkin' in request.session and 'checkout' in request.session:
+                return redirect('riepilogoprenotazione')
 
-            if tipo == "prenotazione":
-                return redirect('riepilogoprenotazione')  # Reindirizza al riepilogo della prenotazione
-            else:
-                login(request, user)  # Effettua il login automatico per la registrazione
-                return redirect('homepage')
+            # Se non c'era una prenotazione, lo mandiamo alla homepage
+            return redirect('homepage')
     else:
         form = CustomUserCreationForm()
 
-    # Determina il contesto dinamico
     context = {
         'form': form,
-        'titolo': "Prenotazione" if tipo == "prenotazione" else "Registrazione",
-        'bottone': "Prosegui con la prenotazione" if tipo == "prenotazione" else "Registrati",
-        'action': '/prenotazione/' if tipo == "prenotazione" else '/registrazione/',  # URL di destinazione
+        'titolo': "Registrazione",
+        'bottone': "Registrati",
+        'action': '/registrazione/',  # Invia il form alla stessa URL
     }
 
     return render(request, 'homepage/registrazione.html', context)
 
-def riepilogoprenotazione(request):
 
-    # Recupera i dati dalla sessione
+def riepilogoprenotazione(request):
     nome = request.session.get('nome')
     cognome = request.session.get('cognome')
     email = request.session.get('email')
 
-    # Recupera i dati dalla query string
+    # Assicurati che tutti i dati siano nella sessione
+    if not all([nome, cognome, email]):
+        return render(request, 'homepage/error.html', {'error': 'Dati della prenotazione non disponibili!'})
+
+    # Recupera i dati dalla sessione
     data_inizio = request.session.get('checkin')
     data_fine = request.session.get('checkout')
     numero_persone = request.session.get('persone')
@@ -134,6 +141,7 @@ def riepilogoprenotazione(request):
     }
 
     return render(request, 'homepage/riepilogoprenotazione.html', context)
+
 
 @login_required
 def gestisci_prenotazioni(request):
@@ -163,7 +171,6 @@ def gestisci_prenotazioni(request):
 
     return render(request, 'homepage/gestisci_prenotazioni.html', {'prenotazioni': prenotazioni})
 
-
 def gestisci_recensioni(request):
     recensioni = Recensione.objects.order_by('-data_creazione')
     return render(request, 'homepage/recensioni.html', {'recensioni': recensioni})
@@ -178,13 +185,11 @@ def aggiungi_recensione(request):
         form = RecensioneForm()
     return render(request, 'homepage/aggiungi_recensione.html', {'form': form})
 
-
-
 def logout(request):
     logout(request)
     return redirect('homepage')  # Reindirizza alla homepage dopo il logout
 
-def login(request):
+def login_view(request):
     return redirect(request, "login.html")
 
 def verifica_disponibilita_view(request, villa_id):

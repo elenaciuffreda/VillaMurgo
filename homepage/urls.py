@@ -8,12 +8,12 @@ urlpatterns = [
     path('foto_gallery/', views.foto_gallery, name="foto_gallery"),
     path('contattaci/', views.contattaci,name="contattaci"),
     path('disponibilita/', views.disponibilita, name='disponibilita'),
-    path('registrazione/', views.registrazione_o_prenotazione, {'tipo': 'registrazione'}, name='registrazione'),
-    path('prenotazione/', views.registrazione_o_prenotazione, {'tipo': 'prenotazione'}, name ='prenotazione'),
+    path('registrazione/', views.registrazione, name='registrazione'),
     path('riepilogo-prenotazione/', views.riepilogoprenotazione, name='riepilogoprenotazione'),
     path('recensioni/', views.gestisci_recensioni, name='recensioni'),  
     path('recensioni/aggiungi/', views.aggiungi_recensione, name='aggiungi_recensione'),
     path('gestisci-prenotazioni/', views.gestisci_prenotazioni, name='gestisci_prenotazioni'),
     path('logout/', views.logout, name='logout'),
-    path('login/', views.login, name='login')
+    path('login/', views.login_view, name='login'),
+    path('verifica-disponibilita/<int:villa_id>/', views.verifica_disponibilita_view, name='verifica_disponibilita'),
 ]
