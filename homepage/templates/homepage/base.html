@@ -57,17 +57,32 @@
                 flex-direction: column;
                 min-height: 100vh;
             }
-            .btn-custom {
-                background-color: #dec683;
-                color: black;
-                border-radius: 20px;
-                padding: 10px 30px;
-                border: none;
+            @media (min-width: 576px) {
+                .btn-custom {
+                    background-color: #dec683 !important;;
+                    color: black;
+                    border-radius: 20px;
+                    padding: 5px 15px;
+                    border: none;
+                    display: block;
+                    width: 100%;
+                    margin-bottom: 10px;
+                }
+                .btn-custom:hover {
+                    background-color: #fff0bf !important;;
+                    color: black;
+                }
             }
-            .btn-custom:hover {
-                background-color: #fff0bf;
-                color: black;
+            
+            @media (max-width: 576px) {
+                .btn-custom {
+                    font-size: 12px;
+                    padding: 6px 15px;
+                    border-radius: 10px;
+                }
             }
+            
+            
             .container {
                 flex: 1; /* Fa sì che il contenitore prenda tutto lo spazio disponibile */
             }
