@@ -5,14 +5,15 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import logout
 from django.utils import timezone
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from datetime import datetime
 from django.contrib.auth.forms import AuthenticationForm
-from .models import Villa, Homepage
-from .models import Recensione
-from .models import Homepage
-from .models import Booking
-from .models import Attivita
-from datetime import date, datetime
+
+
+from .models import Villa, Homepage, Attivita, Recensione, Booking, Waitlist
 from .forms import CustomUserCreationForm, RecensioneForm  
+import json
 
 def homepage(request):
     immagini = Homepage.objects.all()
@@ -128,7 +129,6 @@ def registrazione(request):
         'bottone': 'Registrati',
         'titolo': 'Registrazione'})
 
-
 def riepilogoprenotazione(request):
     nome = request.session.get('nome')
     cognome = request.session.get('cognome')
@@ -157,7 +157,6 @@ def riepilogoprenotazione(request):
     }
 
     return render(request, 'homepage/riepilogoprenotazione.html', context)
-
 
 @login_required
 def gestisci_prenotazioni(request):
@@ -267,7 +266,6 @@ def crea_prenotazione(request):
         messages.error(request, 'Dati mancanti, impossibile confermare la prenotazione.')
         return redirect('riepilogoprenotazione')
 
-
 def gestisci_recensioni(request):
     recensioni = Recensione.objects.order_by('-data_creazione')
     return render(request, 'homepage/recensioni.html', {'recensioni': recensioni})
@@ -340,3 +338,29 @@ def verifica_disponibilita_view(request, villa_id):
 
 def attivita_view (request): 
      return render(request, 'homepage/attivita.html')
+
+@csrf_exempt
+def add_to_waitlist(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            email = data.get('email')
+
+            if not email:
+                return JsonResponse({'success': False, 'message': 'Email mancante'}, status=400)
+
+            # Verifica se l'email è già presente nella lista d'attesa
+            if Waitlist.objects.filter(email=email).exists():
+                return JsonResponse({'success': False, 'message': 'Questa email è già nella lista d\'attesa.'}, status=400)
+
+            # Aggiungi l'utente alla lista d'attesa
+            waitlist_entry = Waitlist(email=email)
+            waitlist_entry.save()
+
+            return JsonResponse({'success': True, 'message': 'Ti abbiamo aggiunto alla lista d\'attesa!'})
+        
+        except Exception as e:
+            print(f"Errore durante la richiesta: {e}")  # Stampa l'errore per il debug
+            return JsonResponse({'success': False, 'message': 'Errore interno. Riprova più tardi.'}, status=500)
+    
+    return JsonResponse({'success': False, 'message': 'Metodo non permesso'}, status=405)

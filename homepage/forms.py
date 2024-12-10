@@ -41,3 +41,5 @@ class RecensioneForm(forms.ModelForm):
             'voto': forms.Select(attrs={'class': 'form-control'}, choices=[(i, f"{i} - {descr}") for i, descr in enumerate(
                 ["Pessimo", "Scarso", "Sufficiente", "Buono", "Eccellente"], 1)]),
         }
+class WaitlistForm(forms.Form):
+    email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'placeholder': 'Inserisci la tua email'}))

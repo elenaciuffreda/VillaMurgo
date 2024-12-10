@@ -26,4 +26,7 @@ urlpatterns = [
 
     # Contatti
     path('contattaci/', views.contattaci, name="contattaci"),
+    
+    # Lista d'attesa
+    path('add_to_waitlist/', views.add_to_waitlist, name='add_to_waitlist'),
 ]

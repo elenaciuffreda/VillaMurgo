@@ -1,7 +1,5 @@
 from django.contrib import admin
-from .models import Homepage, Villa, Recensione, Attivita
-from .models import Booking
-
+from .models import Homepage, Villa, Recensione, Attivita, Booking, Waitlist
 
 
 
@@ -29,3 +27,12 @@ class AttivitaAdmin(admin.ModelAdmin):
     list_display = ('titolo', 'descrizione', 'immagine')  # Mostra nella lista
     search_fields = ('titolo',)  # Aggiungi una barra di ricerca
     list_filter = ('titolo',)  # Aggiungi un filtro per il titolo
+
+
+
+@admin.register(Waitlist)
+class WaitlistAdmin(admin.ModelAdmin):
+    list_display = ('email', 'data_iscrizione')  # Visualizza la colonna email e data di iscrizione
+    search_fields = ('email',)  # Permette di cercare gli utenti per email
+    list_filter = ('data_iscrizione',)  # Filtro per data di iscrizione
+    ordering = ('-data_iscrizione',)  # Ordina in modo decrescente in base alla data di iscrizione

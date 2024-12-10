@@ -1,8 +1,63 @@
 {% extends 'homepage/base.html' %}
 
-{% block title %}Errore - Pagina Non Trovata {% endblock %}
+{% block title %}
+Errore - Villa Murgo
+{% endblock %}
 
 {% block content %}
-    <h3>Errore</h3>
-    <p>La pagina che stavi cercando non esiste </p>
+<div class="container mt-5">
+    <div class="card shadow-lg p-3 mb-5 bg-white rounded">
+        <div class="card-body">
+            <h4>Errore</h4>
+            <p>La pagina che stavi cercando non esiste.</p>
+            <p>Oppure probabilmente stavi cercando di prenotare e la casa risulta già essere occupata.</p>
+
+            <!-- Form per la lista d'attesa -->
+            <form id="waitlistForm" method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="email" class="form-label">Se questo è il caso, inserisci la tua email per essere notificato</label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+                <button type="submit" class="btn btn-primary" id="notificamiButton">Notificami</button>
+            </form>
+            <div id="message" class="mt-3"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('waitlistForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        var email = document.getElementById('email').value;
+
+        if (!email) {
+            alert("Per favore, inserisci una email valida.");
+            return;
+        }
+
+       
+        fetch("{% url 'add_to_waitlist' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({ 'email': email })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('message').innerHTML = '<div class="alert alert-success">Ti abbiamo aggiunto alla lista d\'attesa! Ti notificheremo appena la villa sarà disponibile.</div>';
+            } else {
+                document.getElementById('message').innerHTML = '<div class="alert alert-danger">Si è verificato un errore. Non sei registrato.</div>';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('message').innerHTML = '<div class="alert alert-danger">Si è verificato un errore. Riprova più tardi.</div>';
+        });
+    });
+</script>
 {% endblock %}

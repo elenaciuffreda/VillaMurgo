@@ -63,3 +63,10 @@ class ImmagineAttivita(models.Model):
 
     def __str__(self):
         return f"Immagine per {self.attivita.titolo}"
+
+class Waitlist(models.Model):
+    email = models.EmailField(unique=True)
+    data_iscrizione = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.email
