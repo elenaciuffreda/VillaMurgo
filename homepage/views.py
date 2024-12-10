@@ -123,7 +123,10 @@ def registrazione(request):
     else:
         form = CustomUserCreationForm()
 
-    return render(request, 'homepage/registrazione.html', {'form': form})
+    return render(request, 'homepage/registrazione.html', {
+        'form': form,
+        'bottone': 'Registrati',
+        'titolo': 'Registrazione'})
 
 
 def riepilogoprenotazione(request):
@@ -156,34 +159,51 @@ def riepilogoprenotazione(request):
     return render(request, 'homepage/riepilogoprenotazione.html', context)
 
 
-
 @login_required
 def gestisci_prenotazioni(request):
-    prenotazioni = Booking.objects.filter(utente=request.user).order_by('-checkin')
-    print(f"Prenotazioni trovate: {prenotazioni}")  # Aggiungi questa riga per il debug
+    # Recupera tutte le prenotazioni (booking) dell'utente loggato
+    bookings = Booking.objects.filter(utente=request.user).order_by('-checkin')
+    print(f"Booking trovati: {bookings}")  # Debug per controllare i risultati
 
     if request.method == 'POST':
+        # Ottieni l'ID del booking dalla richiesta POST
         booking_id = request.POST.get('booking_id')
-        prenotazione = get_object_or_404(Booking, id=booking_id, utente=request.user)
+        booking = get_object_or_404(Booking, id=booking_id, utente=request.user)
 
         if 'delete' in request.POST:
-            prenotazione.delete()
+            # Elimina il booking
+            booking.delete()
             messages.success(request, "Prenotazione cancellata con successo!")
+        
         elif 'edit' in request.POST:
+            # Ottieni le nuove date per modificare il booking
             checkin = request.POST.get('checkin')
             checkout = request.POST.get('checkout')
 
-            if checkin and checkout and checkin < checkout:
-                prenotazione.checkin = checkin
-                prenotazione.checkout = checkout
-                prenotazione.save()
-                messages.success(request, "Prenotazione aggiornata con successo!")
+            # Controlla se le date sono valide
+            if checkin and checkout:
+                try:
+                    # Converti le date in oggetti `date`
+                    checkin = datetime.strptime(checkin, '%Y-%m-%d').date()
+                    checkout = datetime.strptime(checkout, '%Y-%m-%d').date()
+
+                    # Controlla se la data di check-in è prima di quella di check-out
+                    if checkin < checkout:
+                        booking.checkin = checkin
+                        booking.checkout = checkout
+                        booking.save()
+                        messages.success(request, "Prenotazione aggiornata con successo!")
+                    else:
+                        messages.error(request, "La data di check-in deve essere prima della data di check-out.")
+                except ValueError:
+                    messages.error(request, "Le date non sono nel formato corretto. Usa il formato YYYY-MM-DD.")
             else:
-                messages.error(request, "Le date non sono valide. Controlla e riprova.")
+                messages.error(request, "Le date di check-in e check-out sono obbligatorie.")
 
         return redirect('gestisci_prenotazioni')
 
-    return render(request, 'homepage/gestisci_prenotazioni.html', {'prenotazioni': prenotazioni})
+    # Renderizza la pagina con i booking dell'utente
+    return render(request, 'homepage/gestisci_prenotazioni.html', {'prenotazioni': bookings})
 
 def gestisci_cancellazione(request, prenotazione):
     prenotazione.delete()
@@ -215,40 +235,37 @@ def gestisci_modifica(request, prenotazione):
 
 @login_required
 def crea_prenotazione(request):
-    # Recuperiamo i dati dalla sessione
-    data_inizio = request.session.get('checkin')
-    data_fine = request.session.get('checkout')
-    numero_persone = request.session.get('persone')
-    prezzo_totale = request.session.get('prezzo')
+    # Recupera i dati dalla sessione
+    nome = request.session.get('nome')
+    cognome = request.session.get('cognome')
+    email = request.session.get('email')
+    checkin = request.session.get('checkin')
+    checkout = request.session.get('checkout')
+    persone = request.session.get('persone')
+    prezzo = request.session.get('prezzo')
 
-    if not all([data_inizio, data_fine, numero_persone, prezzo_totale]):
-        messages.error(request, "Dati della prenotazione non validi o incompleti.")
-        return redirect('homepage')
+    print(f"Checkin: {checkin}, Checkout: {checkout}, Persone: {persone}, Prezzo: {prezzo}")
 
-    # Recupera la villa
-    villa = Villa.objects.get(nomeVilla="Villa Murgo")
+    if all([checkin, checkout, persone, prezzo]):
+        villa = Villa.objects.first()  # Recupero villa
+        if not villa:
+            messages.error(request, "Nessuna villa disponibile per la prenotazione.")
+            return redirect('homepage')
 
-    # Salvataggio della prenotazione
-    prenotazione = Booking.objects.save(
-        utente=request.user,
-        villa=villa,
-        checkin=data_inizio,
-        checkout=data_fine,
-        numero_persone=numero_persone,
-        prezzo_totale=prezzo_totale,
-        data_creazione=timezone.now()
-    )
+        booking = Booking.objects.create(
+            utente=request.user,  # Utente loggato
+            villa=villa,          # Unica villa
+            checkin=checkin,
+            checkout=checkout,
+            numero_persone=persone,
+            prezzo_totale=prezzo
+        )
 
-    # Pulizia della sessione
-    request.session['checkin'] = None
-    request.session['checkout'] = None
-    request.session['persone'] = None
-    request.session['prezzo'] = None
-
-    # Messaggio di successo
-    messages.success(request, "Prenotazione completata con successo!")
-
-    return redirect('gestisci_prenotazioni')
+        messages.success(request, 'Prenotazione confermata con successo!')
+        return redirect('gestisci_prenotazioni')
+    else:
+        messages.error(request, 'Dati mancanti, impossibile confermare la prenotazione.')
+        return redirect('riepilogoprenotazione')
 
 
 def gestisci_recensioni(request):
