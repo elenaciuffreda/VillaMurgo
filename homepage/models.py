@@ -26,7 +26,7 @@ class Villa(models.Model):
         
 class Booking(models.Model):
     utente = models.ForeignKey(User, on_delete=models.CASCADE)
-    villa = models.ForeignKey(Villa, on_delete=models.CASCADE, related_name='bookings')  # Aggiungi related_name
+    villa = models.ForeignKey(Villa, on_delete=models.CASCADE, related_name='bookings')  
     checkin = models.DateField()
     checkout = models.DateField()
     numero_persone = models.PositiveIntegerField()

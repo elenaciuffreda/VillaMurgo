@@ -1,30 +1,37 @@
 {% extends 'homepage/base.html' %}
 
-{% block title %}
-Riepilogo Prenotazione
-{% endblock %}
+{% block title %}Riepilogo Prenotazione{% endblock %}
 
 {% block content %}
 <div class="container mt-5">
-    <h2 class="text-center">Riepilogo Prenotazione</h2>
-    <hr>
-    <div class="card p-4">
-        <h5>Dettagli Utente</h5>
-        <p><strong>Nome:</strong> {{ nome }}</p>
-        <p><strong>Cognome:</strong> {{ cognome }}</p>
-        <p><strong>Email:</strong> {{ email }}</p>
-        <hr>
-        <h5>Dettagli Prenotazione</h5>
-        <p><strong>Check-in:</strong> {{ data_inizio }}</p>
-        <p><strong>Check-out:</strong> {{ data_fine }}</p>
-        <p><strong>Numero di Persone:</strong> {{ numero_persone }}</p>
-        <p><strong>Prezzo Totale:</strong> €{{ prezzo_totale }}</p>
-        <hr>
-        <div class="alert alert-success" role="alert">
-            La tua prenotazione è stata completata con successo!
-        </div>
-        <div class="alert alert-info" role="alert">
-            A breve riceverai una email con tutte le informazioni.
+    <div class="card shadow-lg p-3 mb-5 bg-white rounded">
+        <div class="card-body">
+            <h2 class="card-title text-center">Riepilogo Prenotazione</h2>
+            <hr>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Le tue informazioni:</h5>
+                    <p><strong>Nome:</strong> {{ nome }}</p>
+                    <p><strong>Cognome:</strong> {{ cognome }}</p>
+                    <p><strong>Email:</strong> {{ email }}</p>
+                </div>
+
+                <div class="col-md-6">
+                    <h5>Dettagli prenotazione:</h5>
+                    <p><strong>Check-in:</strong> {{ data_inizio }}</p>
+                    <p><strong>Check-out:</strong> {{ data_fine }}</p>
+                    <p><strong>Numero di persone:</strong> {{ numero_persone }}</p>
+                    <p><strong>Prezzo totale:</strong> €{{ prezzo_totale }}</p>
+                </div>
+            </div>
+
+            <hr>
+
+            <form method="POST" action="{% url 'crea_prenotazione' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success">Conferma Prenotazione</button>
+            </form>
         </div>
     </div>
 </div>

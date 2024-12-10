@@ -30,6 +30,8 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Usa il database per la sessione
+
 # Application definition
 
 INSTALLED_APPS = [
