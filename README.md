@@ -19,7 +19,6 @@ Questo progetto sviluppato con **Django** è un sistema di prenotazione online c
 - **SQLite**: Database utilizzato per il progetto (può essere facilmente sostituito con altri sistemi di database come PostgreSQL).
 
 ## Installazione
-
-1. Clona il repository:
+Clona il repository:
 
    git clone https://github.com/elenaciuffreda/VillaMurgo
