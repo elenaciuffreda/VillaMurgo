@@ -47,7 +47,7 @@ class Recensione(models.Model):
     def __str__(self):
         return f"{self.nome} - {self.voto}/5"
     
-#Modello per le attività 
+#Modello per le attività visualizzate in 'Chi siamo'
 class Attivita(models.Model):
     titolo = models.CharField(max_length=200)
     descrizione = models.TextField()
@@ -55,3 +55,11 @@ class Attivita(models.Model):
 
     def __str__(self):
         return self.titolo
+
+class ImmagineAttivita(models.Model):
+    attivita = models.ForeignKey(Attivita, related_name='immagini', on_delete=models.CASCADE)
+    immagine = models.ImageField(upload_to='attivita_pics/')
+    descrizione_immagine = models.CharField(max_length=255, blank=True, null=True)
+
+    def __str__(self):
+        return f"Immagine per {self.attivita.titolo}"
