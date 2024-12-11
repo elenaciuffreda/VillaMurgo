@@ -22,3 +22,11 @@ Questo progetto sviluppato con **Django** è un sistema di prenotazione online c
 Clona il repository:
 
    git clone https://github.com/elenaciuffreda/VillaMurgo
+
+Una volta clonato, aprire il progetto nel proprio IDE e lanciare il seguente comando da terminale:
+   python manage.py runserver
+Una volta lanciato verrà visualizzato nel terminale un link che avrà la seguente forma
+http://127.0.0.1:8000
+
+Aggiungere al seguente link: /homepage/
+Il link quindi dovrà avere questa forma: http://127.0.0.1:8000/homepage/
